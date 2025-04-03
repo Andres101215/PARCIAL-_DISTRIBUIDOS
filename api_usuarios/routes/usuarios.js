@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await Usuario.find();
 
         // Agregar el IMC a cada usuario
         const usersWithIMC = users.map(user => {
