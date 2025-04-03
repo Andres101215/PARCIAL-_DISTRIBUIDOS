@@ -1,5 +1,6 @@
 const express = require("express");
 const Usuario = require("../models/Usuario");
+const { calcularIMC, getIMCRecommendation } = require("../services/imcService"); // Importar el servicio de IMC
 
 const router = express.Router();
 
@@ -9,21 +10,11 @@ router.get("/", async (req, res) => {
     try {
         const users = await Usuario.find();
 
-        // Agregar el IMC a cada usuario
-        const usersWithIMC = users.map(user => {
-            const imc = user.peso / (user.altura * user.altura);
-            return {
-                ...user._doc, // Convertir documento Mongo a objeto JS
-                imc: imc.toFixed(2) // Redondear a 2 decimales
-            };
-        });
-
         res.json(usersWithIMC);
     } catch (error) {
         res.status(500).json({ mensaje: "Error al obtener los usuarios", error });
     }
 });
-
 
 router.get("/:id", async (req, res) => {
     try {
@@ -40,10 +31,31 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const nuevoUsuario = new Usuario(req.body);
+        // Extraer datos del request
+        const { nombre, apellido, genero, altura, peso, edad } = req.body;
+
+        // Calcular el IMC usando el servicio
+        const imc = calcularIMC(peso, altura);
+        const { categoria, recomendacion } = getIMCRecommendation(imc);
+
+        // Crear nuevo usuario con el IMC agregado
+        const nuevoUsuario = new Usuario({
+            nombre,
+            apellido,
+            genero,
+            altura,
+            peso,
+            edad,
+            imc, // Guardar IMC en la base de datos
+            categoriaIMC: categoria, // Guardar la categoría
+            recomendacionIMC: recomendacion // Guardar la recomendación
+        });
+
+        // Guardar en la base de datos
         await nuevoUsuario.save();
         res.status(201).json(nuevoUsuario);
     } catch (error) {
+        console.error("❌ Error al crear usuario:", error);
         res.status(500).json({ mensaje: "Error al crear el usuario", error });
     }
 });
