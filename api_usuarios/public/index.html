@@ -59,10 +59,10 @@
   <script>
     const form = document.getElementById("usuarioForm");
     const resultadoDiv = document.getElementById("resultado");
-
+  
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
+  
       const data = {
         nombre: document.getElementById("nombre").value,
         apellido: document.getElementById("apellido").value,
@@ -71,23 +71,33 @@
         peso: parseFloat(document.getElementById("peso").value),
         edad: parseInt(document.getElementById("edad").value)
       };
-
-      // Calcular IMC localmente
-      const imc = data.peso / (data.altura * data.altura);
-
-      resultadoDiv.innerHTML = `
-        <div class="alert alert-info">
-          <strong>${data.nombre}</strong>, tu IMC es <strong>${imc.toFixed(2)}</strong>
-        </div>
-      `;
-
-      // const res = await fetch("http://localhost:5000/api/usuarios", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(data)
-      // });
-      // const resData = await res.json();
+  
+      try {
+        const res = await fetch("http://localhost:5000/api/usuarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+  
+        const user = await res.json();
+  
+        resultadoDiv.innerHTML = `
+          <div class="alert alert-success">
+            <h5>IMC: ${user.imc}</h5>
+            <p><strong>Categoría:</strong> ${user.categoriaIMC}</p>
+            <p><strong>Recomendación:</strong> ${user.recomendacionIMC}</p>
+          </div>
+        `;
+      } catch (error) {
+        resultadoDiv.innerHTML = `
+          <div class="alert alert-danger">
+            Error al calcular IMC o guardar usuario.
+          </div>
+        `;
+        console.error(error);
+      }
     });
   </script>
+  
 </body>
 </html>

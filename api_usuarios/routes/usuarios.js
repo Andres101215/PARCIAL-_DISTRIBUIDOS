@@ -1,6 +1,6 @@
 const express = require("express");
 const Usuario = require("../models/Usuario");
-const { calcularIMC, getIMCRecommendation } = require("../services/imcService"); // Importar el servicio de IMC
+const { calcularIMC, getIMCRecommendation } = require("../../services/imcService"); // Importar el servicio de IMC
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
     try {
         const users = await Usuario.find();
 
-        res.json(usersWithIMC);
+        res.json(users);
     } catch (error) {
         res.status(500).json({ mensaje: "Error al obtener los usuarios", error });
     }
