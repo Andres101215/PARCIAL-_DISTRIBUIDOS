@@ -1,6 +1,6 @@
 const express = require("express");
 const Usuario = require("../models/Usuario");
-const { calcularIMC, getIMCRecommendation } = require("../../services/imcService"); // Importar el servicio de IMC
+const { calcularIMC, getIMCRecommendation, calcularCalorias, generarDieta } = require("../services/imcService");
 
 const router = express.Router();
 
@@ -27,7 +27,6 @@ router.get("/:id", async (req, res) => {
         res.status(500).json({ mensaje: "Error al obtener el usuario", error });
     }
 });
-
 
 router.post("/", async (req, res) => {
     try {
@@ -67,7 +66,6 @@ router.post("/", async (req, res) => {
         res.status(500).json({ mensaje: "Error al crear el usuario", error });
     }
 });
-
 
 router.put("/:id", async (req, res) => {
     try {
