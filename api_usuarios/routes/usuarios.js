@@ -7,8 +7,18 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const usuarios = await Usuario.find();
-        res.json(usuarios);
+        const users = await User.find();
+
+        // Agregar el IMC a cada usuario
+        const usersWithIMC = users.map(user => {
+            const imc = user.peso / (user.altura * user.altura);
+            return {
+                ...user._doc, // Convertir documento Mongo a objeto JS
+                imc: imc.toFixed(2) // Redondear a 2 decimales
+            };
+        });
+
+        res.json(usersWithIMC);
     } catch (error) {
         res.status(500).json({ mensaje: "Error al obtener los usuarios", error });
     }
