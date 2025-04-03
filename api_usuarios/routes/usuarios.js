@@ -1,6 +1,6 @@
 const express = require("express");
 const Usuario = require("../models/Usuario");
-const { calcularIMC, getIMCRecommendation, calcularCalorias, generarDieta } = require("../services/imcService");
+const { calcularIMC, getIMCRecommendation, calcularCalorias, generarDieta } = require("../../services/imcService");
 
 const router = express.Router();
 
@@ -54,7 +54,6 @@ router.post("/", async (req, res) => {
             imc,
             categoriaIMC: categoria,
             recomendacionIMC: recomendacion,
-            caloriasDiarias: calorias,
             dieta
         });
 
