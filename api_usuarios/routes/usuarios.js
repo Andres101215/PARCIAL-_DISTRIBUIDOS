@@ -34,11 +34,17 @@ router.post("/", async (req, res) => {
         // Extraer datos del request
         const { nombre, apellido, genero, altura, peso, edad } = req.body;
 
-        // Calcular el IMC usando el servicio
+        // Calcular IMC
         const imc = calcularIMC(peso, altura);
         const { categoria, recomendacion } = getIMCRecommendation(imc);
 
-        // Crear nuevo usuario con el IMC agregado
+        // Calcular calorías diarias recomendadas
+        const calorias = calcularCalorias(altura, peso, edad, genero);
+
+        // Generar dieta basada en el IMC y calorías
+        const { dieta } = generarDieta(imc, calorias);
+
+        // Crear nuevo usuario con IMC y dieta
         const nuevoUsuario = new Usuario({
             nombre,
             apellido,
@@ -46,12 +52,14 @@ router.post("/", async (req, res) => {
             altura,
             peso,
             edad,
-            imc, // Guardar IMC en la base de datos
-            categoriaIMC: categoria, // Guardar la categoría
-            recomendacionIMC: recomendacion // Guardar la recomendación
+            imc,
+            categoriaIMC: categoria,
+            recomendacionIMC: recomendacion,
+            caloriasDiarias: calorias,
+            dieta
         });
 
-        // Guardar en la base de datos
+        // Guardar usuario en la base de datos
         await nuevoUsuario.save();
         res.status(201).json(nuevoUsuario);
     } catch (error) {
